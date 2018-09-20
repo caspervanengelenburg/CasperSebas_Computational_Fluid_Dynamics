@@ -23,9 +23,4 @@ space_W = 12; % m^2 taken by a model W car
 
 % The model R and modelWare respectively being sold for 55000e and 75000e.
 price_R = 55*10^3; % Euro
-price_W = 75*10^3; % Euro
-
-% the cost of manufacturing the cars without considering the worker salaries is 30000e for the
-% model R and 45000e for the model W.
-costs_R = 30*10^3; % Euro without worker salaries
-costs_W = 45*10^3; % Euro without worker salaries
+price_W 55*10^3; % Euro

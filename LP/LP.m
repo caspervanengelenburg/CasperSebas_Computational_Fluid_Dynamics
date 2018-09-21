@@ -69,7 +69,7 @@ Cm = salary_costs;
 %battery cells
 c1 = 4E3;
 c2 = 6E3;
-ctot = (5+EE1);
+ctot = (5+EE1)*1E6;
 
 %manufacturing hours
 H1 = 10;
@@ -93,10 +93,10 @@ Ae = [];
 be = [];
 
 %linprog
-options = optimoptions('linprog','Algorithm','simplex')
-x = linprog(P, A, b, Ae, be, lb, ub, options)
+options = optimoptions('linprog','Algorithm','simplex');
+[x fval flag] = linprog(P, A, b, Ae, be, lb, ub, x0, options);
 
-
+profit1 = fval - Cm; 
 
 
 

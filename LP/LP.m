@@ -93,7 +93,7 @@ Ae = [];
 be = [];
 
 %linprog
-options = optimoptions('linprog','Algorithm','simplex');
+options = optimoptions('linprog','Algorithm','dual-simplex');
 [x fval flag] = linprog(P, A, b, Ae, be, lb, ub, x0, options);
 
 profit1 = fval - Cm; 

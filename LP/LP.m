@@ -102,7 +102,7 @@ profit2 = -fval - Cm  % Minus because it was a maximization problem initially
 % RESULTS:
 
 %  Optimal benefit:
-% profit1 =
+% profit2 =
 %    4.3573e+07
 %  Number of cars:
 %  x =

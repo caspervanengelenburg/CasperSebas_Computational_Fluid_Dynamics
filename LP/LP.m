@@ -178,6 +178,7 @@ x_max = [results(3,max_index),results(4,max_index)]; % Number of cars at the opt
 %          1333 model W
 
 
+
 %% 6 Succes and a new model car!
 % Because of the success, the 1000 limit on the model R is no longer in place 
 % and they have signed contracts to produce at least 1250 model R and 

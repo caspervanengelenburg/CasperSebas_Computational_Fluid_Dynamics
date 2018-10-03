@@ -1,6 +1,7 @@
 %% Linear programming assignment
 % Course: SC42055 Optimization in Systems and Control
 % Jacob Lont, 4424409 and Casper van Engelenburg, 4237080
+% Deadline: 03-10-2018
 
 %% Always first pull from Github before making any changes
 

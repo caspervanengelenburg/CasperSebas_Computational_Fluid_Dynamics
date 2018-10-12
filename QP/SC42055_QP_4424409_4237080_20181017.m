@@ -43,10 +43,11 @@ read_prices = readtable(strcat(pwd, '\Data\inputPrices.csv'));
 
 
 
-
-
-
-
+% optimoptions(’quadprog’,’Algorithm’,’active-set’)
+% optimoptions(’quadprog’,’Algorithm’,’interior-point-convex’)
+% optimoptions(’quadprog’,’MaxIter’,100)
+x = quadprog(H,c,A,b,Aeq,Beq,lb,ub,x0,options)
+ 
 
 
 

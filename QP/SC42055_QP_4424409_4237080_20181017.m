@@ -22,3 +22,9 @@
 EE1 = 4+0; EE2 = 0+8; EE3 = 9+0;
 
 
+%% 1.
+
+
+
+%% 2.
+data = readtable(strcat(pwd, '\Data\measurements.csv'));

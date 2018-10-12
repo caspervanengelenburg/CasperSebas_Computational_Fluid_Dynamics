@@ -95,3 +95,63 @@ a0 = [];
 o = optimoptions('quadprog', 'Algorithm', 'interior-point-convex');
 
 a = quadprog(H,c,A,b,Aeq,Beq,lb,ub,a0,o);
+
+% a =
+%    1.0e-06 *
+% 
+%     0.2699
+%     0.0075
+
+
+%% 3
+N = 360; % 15 days horizon expressed in hours
+Qin_max = (100 + EE2)*1E3;    % W (converted from kW using E3)
+T1 = 330 + EE3;         % K(elvin)
+Tamb = 275 + EE1;       % K(elvin)
+Tmin = 315;             % K(elvin)
+a = [1.96E-7; 3.8E-9];  % Given parameters
+
+
+% (a) Is the problem quadratic? Justify.
+% (b) Transform the prices to the corrects units so that they can be used in the optimi-
+% zation problem. Which factor did you used to multiply them by?
+
+% where lambda-k-in is the price of buying one unit of input heat at time step
+% lambda_k_in is imported as [euro/MWh]
+% Qout is imported as [W]
+
+price = read_prices.Price * 1E-6; % Euro/Wh
+
+
+% (c) What is the optimal cost of buying the input energy?
+A_term = 1-a(1)*dt; %The term describing A in equation (3) of the QP assignment
+T1_term = [A_term*T1 zeros(1,N-1)]';
+c_k = a(1)*dt*Tamb*ones(N,1);
+
+P = [dt*price(1:N)' zeros(N,1)']; % N input prices, N times 0
+Ae = [a(2)*dt*eye(N) full(gallery('tridiag',N,A_term,-1,0))]; %part1: 1-diagonal, part2: -1 on diagonal, -A_term underthe diagonal
+be = a(2)*dt*read_demand.Heat_demand(1:N) - T1_term - c_k;
+
+
+
+% Define min and max values
+lb = [zeros(1,N) Tmin*ones(1,N)]';  
+ub = [Qin_max*ones(1,N) Inf*ones(1,N)]';
+
+
+
+options = optimoptions('linprog','Algorithm','dual-simplex');
+% options = optimoptions('linprog','Algorithm','interior-point');
+[x, fval, flag] = linprog(P, [], [], Ae, be, lb, ub, [], options);
+
+
+
+
+%%
+
+plot(x(N + 1:2*N))
+
+
+
+
+

@@ -28,10 +28,38 @@ EE1 = 4+0; EE2 = 0+8; EE3 = 9+0;
 
 
 %% 2.
-measured = readtable(strcat(pwd, '\Data\measurements.csv'));
-=======
+
 %loading data
-read_meas = readtable('measurements.csv');
-read_demand = readtable('demand.csv');
-read_prices = readtable('inputprices.csv');
->>>>>>> bbede8f3cc25737c416e00e6ebc16bccaf9258c4
+% read_meas = readtable('measurements.csv');
+% read_demand = readtable('demand.csv');
+% read_prices = readtable('inputprices.csv');
+read_meas = readtable(strcat(pwd, '\Data\measurements.csv'));
+read_demand = readtable(strcat(pwd, '\Data\heatDemand.csv'));
+read_prices = readtable(strcat(pwd, '\Data\inputPrices.csv'));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

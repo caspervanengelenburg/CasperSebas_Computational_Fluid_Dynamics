@@ -21,4 +21,7 @@
 
 EE1 = 4+0; EE2 = 0+8; EE3 = 9+0;
 
-
+%loading data
+read_meas = readtable('measurements.csv');
+read_demand = readtable('demand.csv');
+read_prices = readtable('inputprices.csv');

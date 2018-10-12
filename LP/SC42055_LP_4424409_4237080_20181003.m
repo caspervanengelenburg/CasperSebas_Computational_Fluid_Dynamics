@@ -1,6 +1,7 @@
 %% Linear programming assignment
 % Course: SC42055 Optimization in Systems and Control
 % Jacob Lont, 4424409 and Casper van Engelenburg, 4237080
+% Deadline: 03-10-2018
 
 %% Always first pull from Github before making any changes
 
@@ -180,6 +181,7 @@ x_max = [results(3,max_index),results(4,max_index)]; % Number of cars at the opt
 %       x =
 %          1000 model R
 %          1333 model W
+
 
 
 %% 6 Succes and a new model car!

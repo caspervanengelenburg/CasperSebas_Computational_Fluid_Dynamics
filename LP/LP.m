@@ -94,8 +94,12 @@ be = [];
 
 %linprog
 options = optimoptions('linprog','Algorithm','dual-simplex');
-[x, fval, flag] = linprog(P, A, b, Ae, be, lb, ub, x0, options);
+[x11, fval, flag] = linprog(P, A, b, Ae, be, lb, ub, x0, options);
 
+%constraints 
+
+con_check = A*x11;
+%profit
 profit2 = -fval - Cm  % Minus because it was a maximization problem initially
 
 
@@ -114,7 +118,7 @@ profit2 = -fval - Cm  % Minus because it was a maximization problem initially
 
 %% 3 A change in the market
 ub = [1000 inf]';
-[x, fval, flag] = linprog(P, A, b, Ae, be, lb, ub, x0, options);
+[x22, fval, flag] = linprog(P, A, b, Ae, be, lb, ub, x0, options);
 profit3 = -fval - Cm  % Minus because it was a maximization problem initially
 
 % RESULTS:

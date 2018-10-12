@@ -11,6 +11,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+% Determine where this m-file's folder is and add that folder plus all subfolders to the path.
+% Mainly important for importing the datafiles.
+addpath(genpath(fileparts(which(mfilename))));
+
 %% Initial parameter set
 
 % E1, E2 and E3 are parameters changing from 0 to 18 for each group according to the sum of

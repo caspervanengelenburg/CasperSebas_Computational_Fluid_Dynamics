@@ -145,13 +145,109 @@ options = optimoptions('linprog','Algorithm','dual-simplex');
 [x, fval, flag] = linprog(P, [], [], Ae, be, lb, ub, [], options);
 
 
-
-
-%%
-
+%plot temperature as function of time
+figure(1)
 plot(x(N + 1:2*N))
 
+%final cost
+cost_f = fval
 
+
+%% 4
+
+% (a) Modify (5) to include the temperature constraint and the extra cost. The resulting
+% problem should be a quadratic problem.
+% (b) Solve it in Matlab using quadprog. What is the total optimal cost? How much of
+% that is destined to pay the terminal cost?
+
+% new variables
+pq = (1+EE2)/10; %price for quadratic difference
+Tmax = 368; %maximum temperature
+Tref = 323; %reference temperature
+
+% quadratic problem formulation
+Hq = zeros(2*N,2*N); %H matrix in quadratic formulation
+Hq(end,end) = pq;
+
+cq = [ dt*read_prices.Price(1:N)*1E-6; zeros(N-1,1); - 2*pq*Tref];
+
+ubq = [Qin_max*ones(1,N) Tmax*ones(1,N)]';
+
+% solve quadratic problem
+
+o = optimoptions('quadprog', 'Algorithm', 'interior-point-convex');
+[xq,fvalq,exitflagq,outputq] = quadprog(Hq,cq,[],[],Ae,be,lb,ubq,[],o);
+
+%plot temperature as function of time
+figure(2)
+plot(xq(N + 1:2*N));
+
+%final costs, terminal cost
+cost_fq = fvalq + Tref^2*pq; %total minimum costs
+cost_t = (xq(end) - Tref)^2*pq %terminal cost (TN+1 - Tref)^2*pq
+costs = [cost_f; cost_fq] %cost linear vs quadratic
+
+cost_rel = cost_t/cost_fq %relative costs terminal versus total 
+
+
+
+
+%% 5. Extra
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% EXTRA: PLAYING AROUND WITH THE VARIABLE %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%5.1 higher terminal cost
+%5.2 quadratic costs for every time step
+
+%% 5.1 higher terminal costs
+
+fac = 15:2:40;
+costs_e = zeros(length(fac),1);
+pqe = zeros(length(fac),1);
+
+for idx = 1:length(fac)
+    
+pqe(idx) = pq*fac(idx);
+
+% quadratic problem formulation
+Hqe = zeros(2*N,2*N); %H matrix in quadratic formulation
+Hqe(end,end) = pqe(idx);
+
+cqe = [ dt*read_prices.Price(1:N)*1E-6; zeros(N-1,1); - 2*pqe(idx)*Tref];
+
+[xqe,fvalqe,exitflagqe,outputqe] = quadprog(Hqe,cqe,[],[],Ae,be,lb,ubq,[],o);
+
+costs_e(idx) = fvalqe + Tref^2*pqe(idx);
+
+%plot temperature versus time
+figure(3); 
+    plot(xqe(N+1:2*N))
+    hold on
+end
+
+figure(4)
+plot(costs,pqe)
+
+%% 5.2 quadratic cost for every time step
+
+% quadratic problem formulation
+pq = 1000;
+Hqt = pq*eye(2*N); %H matrix in quadratic formulation
+
+cqt = [dt*read_prices.Price(1:N)*1E-6; -2*pq*Tref*ones(N,1)];
+
+[xqt,fvalqt,exitflagqt,outputqt] = quadprog(Hqt,cqt,[],[],Ae,be,lb,ubq,[],o);
+
+fvalqt
+costs_t = fvalqt + N*pq*Tref^2
+
+%plot temperature versus time
+figure(5); 
+    plot(xqt(N+1:2*N))
+
+    
 
 
 

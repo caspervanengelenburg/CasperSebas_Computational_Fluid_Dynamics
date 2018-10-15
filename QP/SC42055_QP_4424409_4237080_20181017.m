@@ -84,6 +84,8 @@ for idx = 1: num_meas
     c = c + cd;
 end
 
+H = H*2;
+
 %optimize the variables
 A = [];
 b = [];
@@ -97,10 +99,11 @@ o = optimoptions('quadprog', 'Algorithm', 'interior-point-convex');
 a = quadprog(H,c,A,b,Aeq,Beq,lb,ub,a0,o);
 
 % a =
+% 
 %    1.0e-06 *
 % 
-%     0.2699
-%     0.0075
+%     0.1349
+%     0.0037
 
 
 %% 3
@@ -167,7 +170,7 @@ Tref = 323; %reference temperature
 
 % quadratic problem formulation
 Hq = zeros(2*N,2*N); %H matrix in quadratic formulation
-Hq(end,end) = pq;
+Hq(end,end) = 2*pq;
 
 cq = [ dt*read_prices.Price(1:N)*1E-6; zeros(N-1,1); - 2*pq*Tref];
 
@@ -188,6 +191,11 @@ cost_t = (xq(end) - Tref)^2*pq %terminal cost (TN+1 - Tref)^2*pq
 costs = [cost_f; cost_fq] %cost linear vs quadratic
 
 cost_rel = cost_t/cost_fq %relative costs terminal versus total 
+
+
+
+
+
 
 
 

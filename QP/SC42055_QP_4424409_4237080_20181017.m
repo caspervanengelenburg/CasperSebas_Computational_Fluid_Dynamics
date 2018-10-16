@@ -174,6 +174,7 @@ end
 
 %plot temperature as function of time
 figure(1);clf;
+    
     subplot(3,1,1)
     
     plot(t, x(N + 1:2*N), t, ones(N,1)*Tmin, '-.', LineWidth, LineWidth)
@@ -184,7 +185,7 @@ figure(1);clf;
     xlabel('Time $[hour]$', 'Interpreter','latex');
     xt = get(gca, 'XTick');
     set(gca, 'FontSize', FontSize,'FontName','cmr12')
-    
+    title('Hourly energy trade without upper bound on T and without final Temperature optimization', 'Interpreter','latex')
     subplot(3,1,2)
     
     yyaxis left
@@ -279,6 +280,7 @@ figure(2)
     xlabel('Time $[hour]$', 'Interpreter','latex');
     xt = get(gca, 'XTick');
     set(gca, 'FontSize', FontSize,'FontName','cmr12')
+    title('Hourly energy trade with upper bound on T and final Temperature optimization', 'Interpreter','latex')
     
     subplot(3,1,2)
     

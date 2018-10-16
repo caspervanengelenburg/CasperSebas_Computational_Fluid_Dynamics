@@ -272,7 +272,7 @@ end
 figure(2)
     subplot(3,1,1)
     
-    plot(t, xq(N + 1:2*N), t, ones(N,1)*Tmin,'-.r', LineWidth, LineWidth)
+    plot(t, xq(N + 1:2*N), t, ones(N,1)*Tmin,'-.r', t, x(N + 1:2*N), '--b' , LineWidth, LineWidth)
     grid on;
     ylabel('$T  [ ^{\circ}C]$', 'Interpreter','latex');
     ylim([310 345]);
@@ -285,7 +285,7 @@ figure(2)
     subplot(3,1,2)
     
     yyaxis left
-    plot(t, xq(1:N)/1000, t, ones(N,1)*Qin_max/1000,'-.r', LineWidth, LineWidth)
+    plot(t, xq(1:N)/1000, t, ones(N,1)*Qin_max/1000,'-.r',t, x(1:N)/1000, '--b', LineWidth, LineWidth)
     grid on;
     ylabel('$\dot{Q_{in}}$ [kW]', 'Interpreter','latex'); 
     xlabel('Time $[hour]$', 'Interpreter','latex');
@@ -301,7 +301,7 @@ figure(2)
     subplot(3,1,3)
     
     yyaxis left
-    plot(t, cost_at_tq, t, cost_at_t, '-.', LineWidth, LineWidth)
+    plot(t, cost_at_tq, t, cost_at_t, '--b', LineWidth, LineWidth)
     grid on;
     ylabel('Price invested $[\frac{Euro}{hour}]$', 'Interpreter','latex'); 
     xlabel('Time $[hour]$', 'Interpreter','latex');

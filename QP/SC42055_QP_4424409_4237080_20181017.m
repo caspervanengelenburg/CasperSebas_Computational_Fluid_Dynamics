@@ -177,7 +177,7 @@ figure(1);clf;
     
     subplot(3,1,1)
     
-    plot(t, x(N + 1:2*N), t, ones(N,1)*Tmin, '-.', LineWidth, LineWidth)
+    plot(t, x(N + 1:2*N), t, ones(N,1)*Tmin,'-.r', LineWidth, LineWidth)
     grid on;
     ylabel('$T  [ ^{\circ}C]$', 'Interpreter','latex');
     ylim([310 345]);
@@ -189,7 +189,7 @@ figure(1);clf;
     subplot(3,1,2)
     
     yyaxis left
-    plot(t, x(1:N)/1000, LineWidth, LineWidth)
+    plot(t, x(1:N)/1000,t, ones(N,1)*Qin_max/1000,'-.r',LineWidth, LineWidth)
     grid on;
     ylabel('$\dot{Q_{in}}$ [kW]', 'Interpreter','latex'); 
     xlabel('Time $[hour]$', 'Interpreter','latex');
@@ -272,7 +272,7 @@ end
 figure(2)
     subplot(3,1,1)
     
-    plot(t, xq(N + 1:2*N), t, ones(N,1)*Tmin, '-.', LineWidth, LineWidth)
+    plot(t, xq(N + 1:2*N), t, ones(N,1)*Tmin,'-.r', LineWidth, LineWidth)
     grid on;
     ylabel('$T  [ ^{\circ}C]$', 'Interpreter','latex');
     ylim([310 345]);
@@ -285,7 +285,7 @@ figure(2)
     subplot(3,1,2)
     
     yyaxis left
-    plot(t, xq(1:N)/1000, LineWidth, LineWidth)
+    plot(t, xq(1:N)/1000, t, ones(N,1)*Qin_max/1000,'-.r', LineWidth, LineWidth)
     grid on;
     ylabel('$\dot{Q_{in}}$ [kW]', 'Interpreter','latex'); 
     xlabel('Time $[hour]$', 'Interpreter','latex');
@@ -301,7 +301,7 @@ figure(2)
     subplot(3,1,3)
     
     yyaxis left
-    plot(t, cost_at_tq, LineWidth, LineWidth)
+    plot(t, cost_at_tq, t, cost_at_t, '-.', LineWidth, LineWidth)
     grid on;
     ylabel('Price invested $[\frac{Euro}{hour}]$', 'Interpreter','latex'); 
     xlabel('Time $[hour]$', 'Interpreter','latex');
@@ -310,7 +310,7 @@ figure(2)
     set(gca, 'FontSize', FontSize,'FontName','cmr12');
     
     yyaxis right
-    plot(t, tot_cost_at_tq, LineWidth, LineWidth);
+    plot(t, tot_cost_at_tq, t, tot_cost_at_t, '-.', LineWidth, LineWidth);
     ylabel('Total price $[Euro]$', 'Interpreter','latex');
     ylim([0 1.3*max(tot_cost_at_tq(1:N))]);
     

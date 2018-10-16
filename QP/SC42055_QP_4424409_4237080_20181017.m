@@ -28,6 +28,11 @@ EE1 = 4+0; EE2 = 0+8; EE3 = 9+0;
 num_meas = 101+EE1; %total number of measurements 
 dt = 3600; %time step
 
+%plotsettings
+LineWidth = 1; %set default linewidth for plots
+MarkerSize = 10; %set default markersize for plots
+FontSize = 18; %set default fontsize for plots
+
 
 %% 1.
 
@@ -98,16 +103,21 @@ o = optimoptions('quadprog', 'Algorithm', 'interior-point-convex');
 
 a = quadprog(H,c,A,b,Aeq,Beq,lb,ub,a0,o);
 
+
+%%%%%%%%%%%
+% RESULTS %
+%%%%%%%%%%%
 % a =
 % 
 %    1.0e-06 *
 % 
-%     0.1349
-%     0.0037
+%     0.1349 [1/s]
+%     0.0037 [K/J]
 
 
 %% 3
 N = 360; % 15 days horizon expressed in hours
+t = 1:N;
 Qin_max = (100 + EE2)*1E3;    % W (converted from kW using E3)
 T1 = 330 + EE3;         % K(elvin)
 Tamb = 275 + EE1;       % K(elvin)
@@ -123,7 +133,8 @@ a = [1.96E-7; 3.8E-9];  % Given parameters
 % lambda_k_in is imported as [euro/MWh]
 % Qout is imported as [W]
 
-price = read_prices.Price * 1E-6; % Euro/Wh
+facJ = (10^6*dt)^(-1);
+price = read_prices.Price * facJ; % conversion from Eu/MWh --> Euro/J
 
 
 % (c) What is the optimal cost of buying the input energy?
@@ -136,11 +147,9 @@ Ae = [a(2)*dt*eye(N) full(gallery('tridiag',N,A_term,-1,0))]; %part1: 1-diagonal
 be = a(2)*dt*read_demand.Heat_demand(1:N) - T1_term - c_k;
 
 
-
 % Define min and max values
 lb = [zeros(1,N) Tmin*ones(1,N)]';  
 ub = [Qin_max*ones(1,N) Inf*ones(1,N)]';
-
 
 
 options = optimoptions('linprog','Algorithm','dual-simplex');
@@ -148,12 +157,66 @@ options = optimoptions('linprog','Algorithm','dual-simplex');
 [x, fval, flag] = linprog(P, [], [], Ae, be, lb, ub, [], options);
 
 
-%plot temperature as function of time
-figure(1)
-plot(x(N + 1:2*N))
 
-%final cost
-cost_f = fval
+%costs
+cost_f = fval;
+cost_at_t = P(1:N)'.*x(1:N); %Euro
+
+for idx = 1:N;
+    
+    tot_cost_at_t(idx) = sum(cost_at_t(1:idx));
+    
+end
+
+%%%%%%%%%%%
+% RESULTS %
+%%%%%%%%%%%
+
+%plot temperature as function of time
+figure(1);clf;
+    subplot(3,1,1)
+    
+    plot(t, x(N + 1:2*N), t, ones(N,1)*Tmin, '-.', LineWidth, LineWidth)
+    grid on;
+    ylabel('$T  [ ^{\circ}C]$', 'Interpreter','latex');
+    ylim([310 345]);
+    xlim([0 N]);
+    xlabel('Time $[hour]$', 'Interpreter','latex');
+    xt = get(gca, 'XTick');
+    set(gca, 'FontSize', FontSize,'FontName','cmr12')
+    
+    subplot(3,1,2)
+    
+    yyaxis left
+    plot(t, x(1:N)/1000, LineWidth, LineWidth)
+    grid on;
+    ylabel('$\dot{Q_{in}}$ [kW]', 'Interpreter','latex'); 
+    xlabel('Time $[hour]$', 'Interpreter','latex');
+    xlim([0 N]);
+    xt = get(gca, 'XTick');
+    set(gca, 'FontSize', FontSize,'FontName','cmr12')
+    
+    yyaxis right
+    plot(t, price(1:N)*dt, LineWidth, LineWidth);
+    ylabel('$\lambda_{in} [\frac{Euro}{Wh}]$', 'Interpreter','latex');
+    ylim([0 1.3*dt*max(price(1:N))]);
+    
+    subplot(3,1,3)
+    
+    yyaxis left
+    plot(t, cost_at_t, LineWidth, LineWidth)
+    grid on;
+    ylabel('Price invested $[\frac{Euro}{hour}]$', 'Interpreter','latex'); 
+    xlabel('Time $[hour]$', 'Interpreter','latex');
+    xlim([0 N]);
+    xt = get(gca, 'XTick');
+    set(gca, 'FontSize', FontSize,'FontName','cmr12');
+    
+    yyaxis right
+    plot(t, tot_cost_at_t, LineWidth, LineWidth);
+    ylabel('Total price $[Euro]$', 'Interpreter','latex');
+    ylim([0 1.3*max(tot_cost_at_t(1:N))]);
+% fval = 127.5761 Euro
 
 
 %% 4
@@ -163,99 +226,93 @@ cost_f = fval
 % (b) Solve it in Matlab using quadprog. What is the total optimal cost? How much of
 % that is destined to pay the terminal cost?
 
+
 % new variables
 pq = (1+EE2)/10; %price for quadratic difference
 Tmax = 368; %maximum temperature
 Tref = 323; %reference temperature
 
+
 % quadratic problem formulation
 Hq = zeros(2*N,2*N); %H matrix in quadratic formulation
 Hq(end,end) = 2*pq;
 
-cq = [ dt*read_prices.Price(1:N)*1E-6; zeros(N-1,1); - 2*pq*Tref];
+cq = [ dt*read_prices.Price(1:N)*facJ; zeros(N-1,1); - 2*pq*Tref];
 
 ubq = [Qin_max*ones(1,N) Tmax*ones(1,N)]';
 
-% solve quadratic problem
 
+% solve quadratic problem
 o = optimoptions('quadprog', 'Algorithm', 'interior-point-convex');
 [xq,fvalq,exitflagq,outputq] = quadprog(Hq,cq,[],[],Ae,be,lb,ubq,[],o);
 
-%plot temperature as function of time
-figure(2)
-plot(xq(N + 1:2*N));
 
 %final costs, terminal cost
 cost_fq = fvalq + Tref^2*pq; %total minimum costs
-cost_t = (xq(end) - Tref)^2*pq %terminal cost (TN+1 - Tref)^2*pq
-costs = [cost_f; cost_fq] %cost linear vs quadratic
+cost_t = (xq(end) - Tref)^2*pq; %terminal cost (TN+1 - Tref)^2*pq
+costs = [cost_f; cost_fq]; %cost linear vs quadratic
 
-cost_rel = cost_t/cost_fq %relative costs terminal versus total 
+cost_rel = cost_t/cost_fq; %relative costs terminal versus total 
 
+cost_at_tq = [cq(1:N-1).*xq(1:N-1); cq(N).*xq(N) + (xq(end) - Tref)^2*pq]; %Euro/h
 
-
-
-
-
-
-
-
-%% 5. Extra
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% EXTRA: PLAYING AROUND WITH THE VARIABLE %%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%5.1 higher terminal cost
-%5.2 quadratic costs for every time step
-
-%% 5.1 higher terminal costs
-
-fac = 15:2:40;
-costs_e = zeros(length(fac),1);
-pqe = zeros(length(fac),1);
-
-for idx = 1:length(fac)
+for idx = 1:N;
     
-pqe(idx) = pq*fac(idx);
-
-% quadratic problem formulation
-Hqe = zeros(2*N,2*N); %H matrix in quadratic formulation
-Hqe(end,end) = pqe(idx);
-
-cqe = [ dt*read_prices.Price(1:N)*1E-6; zeros(N-1,1); - 2*pqe(idx)*Tref];
-
-[xqe,fvalqe,exitflagqe,outputqe] = quadprog(Hqe,cqe,[],[],Ae,be,lb,ubq,[],o);
-
-costs_e(idx) = fvalqe + Tref^2*pqe(idx);
-
-%plot temperature versus time
-figure(3); 
-    plot(xqe(N+1:2*N))
-    hold on
+    tot_cost_at_tq(idx) = sum(cost_at_tq(1:idx));
+    
 end
 
-figure(4)
-plot(costs,pqe)
 
-%% 5.2 quadratic cost for every time step
+%%%%%%%%%%%
+% RESULTS %
+%%%%%%%%%%%
 
-% quadratic problem formulation
-pq = 1000;
-Hqt = pq*eye(2*N); %H matrix in quadratic formulation
-
-cqt = [dt*read_prices.Price(1:N)*1E-6; -2*pq*Tref*ones(N,1)];
-
-[xqt,fvalqt,exitflagqt,outputqt] = quadprog(Hqt,cqt,[],[],Ae,be,lb,ubq,[],o);
-
-fvalqt
-costs_t = fvalqt + N*pq*Tref^2
-
-%plot temperature versus time
-figure(5); 
-    plot(xqt(N+1:2*N))
-
+%plotting values
+figure(2)
+    subplot(3,1,1)
+    
+    plot(t, xq(N + 1:2*N), t, ones(N,1)*Tmin, '-.', LineWidth, LineWidth)
+    grid on;
+    ylabel('$T  [ ^{\circ}C]$', 'Interpreter','latex');
+    ylim([310 345]);
+    xlim([0 N]);
+    xlabel('Time $[hour]$', 'Interpreter','latex');
+    xt = get(gca, 'XTick');
+    set(gca, 'FontSize', FontSize,'FontName','cmr12')
+    
+    subplot(3,1,2)
+    
+    yyaxis left
+    plot(t, xq(1:N)/1000, LineWidth, LineWidth)
+    grid on;
+    ylabel('$\dot{Q_{in}}$ [kW]', 'Interpreter','latex'); 
+    xlabel('Time $[hour]$', 'Interpreter','latex');
+    xlim([0 N]);
+    xt = get(gca, 'XTick');
+    set(gca, 'FontSize', FontSize,'FontName','cmr12')
+    
+    yyaxis right
+    plot(t, price(1:N)*dt, LineWidth, LineWidth);
+    ylabel('$\lambda_{in} [\frac{Euro}{Wh}]$', 'Interpreter','latex');
+    ylim([0 1.3*dt*max(price(1:N))]);
+    
+    subplot(3,1,3)
+    
+    yyaxis left
+    plot(t, cost_at_tq, LineWidth, LineWidth)
+    grid on;
+    ylabel('Price invested $[\frac{Euro}{hour}]$', 'Interpreter','latex'); 
+    xlabel('Time $[hour]$', 'Interpreter','latex');
+    xlim([0 N]);
+    xt = get(gca, 'XTick');
+    set(gca, 'FontSize', FontSize,'FontName','cmr12');
+    
+    yyaxis right
+    plot(t, tot_cost_at_tq, LineWidth, LineWidth);
+    ylabel('Total price $[Euro]$', 'Interpreter','latex');
+    ylim([0 1.3*max(tot_cost_at_tq(1:N))]);
     
 
-
-
+% total cost (cost_fq) = 142.78 [Euro]
+% terminal cost (cost_t) = 1.2075 [Euro]
+% relative cost of terminal (cost_rel) = 0.0085 [-] = 0.85 [%]

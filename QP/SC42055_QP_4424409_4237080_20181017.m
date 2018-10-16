@@ -29,7 +29,7 @@ num_meas = 101+EE1; %total number of measurements
 dt = 3600; %time step
 
 %plotsettings
-LineWidth = 2; %set default linewidth for plots
+LineWidth = 1; %set default linewidth for plots
 MarkerSize = 10; %set default markersize for plots
 FontSize = 18; %set default fontsize for plots
 
@@ -176,7 +176,7 @@ end
 figure(1);clf;
     subplot(3,1,1)
     
-    plot(t, x(N + 1:2*N), t, ones(N,1)*Tmin, '-.', LineWidth, LineWidth)
+    plot(t, x(N + 1:2*N), t, ones(N,1)*Tmin,'-.r', LineWidth, LineWidth)
     grid on;
     ylabel('$T  [ ^{\circ}C]$', 'Interpreter','latex');
     ylim([310 345]);
@@ -188,7 +188,7 @@ figure(1);clf;
     subplot(3,1,2)
     
     yyaxis left
-    plot(t, x(1:N)/1000, LineWidth, LineWidth)
+    plot(t, x(1:N)/1000,t, ones(N,1)*Qin_max/1000,'-.r',LineWidth, LineWidth)
     grid on;
     ylabel('$\dot{Q_{in}}$ [kW]', 'Interpreter','latex'); 
     xlabel('Time $[hour]$', 'Interpreter','latex');
@@ -271,7 +271,7 @@ end
 figure(2)
     subplot(3,1,1)
     
-    plot(t, xq(N + 1:2*N), t, ones(N,1)*Tmin, '-.', LineWidth, LineWidth)
+    plot(t, xq(N + 1:2*N), t, ones(N,1)*Tmin,'-.r', LineWidth, LineWidth)
     grid on;
     ylabel('$T  [ ^{\circ}C]$', 'Interpreter','latex');
     ylim([310 345]);
@@ -283,7 +283,7 @@ figure(2)
     subplot(3,1,2)
     
     yyaxis left
-    plot(t, xq(1:N)/1000, LineWidth, LineWidth)
+    plot(t, xq(1:N)/1000, t, ones(N,1)*Qin_max/1000,'-.r', LineWidth, LineWidth)
     grid on;
     ylabel('$\dot{Q_{in}}$ [kW]', 'Interpreter','latex'); 
     xlabel('Time $[hour]$', 'Interpreter','latex');

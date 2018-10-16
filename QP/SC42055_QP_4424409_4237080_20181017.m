@@ -29,7 +29,7 @@ num_meas = 101+EE1; %total number of measurements
 dt = 3600; %time step
 
 %plotsettings
-LineWidth = 1; %set default linewidth for plots
+LineWidth = 2; %set default linewidth for plots
 MarkerSize = 10; %set default markersize for plots
 FontSize = 18; %set default fontsize for plots
 
@@ -299,7 +299,7 @@ figure(2)
     subplot(3,1,3)
     
     yyaxis left
-    plot(t, cost_at_tq, LineWidth, LineWidth)
+    plot(t, cost_at_tq, t, cost_at_t, '-.', LineWidth, LineWidth)
     grid on;
     ylabel('Price invested $[\frac{Euro}{hour}]$', 'Interpreter','latex'); 
     xlabel('Time $[hour]$', 'Interpreter','latex');
@@ -308,7 +308,7 @@ figure(2)
     set(gca, 'FontSize', FontSize,'FontName','cmr12');
     
     yyaxis right
-    plot(t, tot_cost_at_tq, LineWidth, LineWidth);
+    plot(t, tot_cost_at_tq, t, tot_cost_at_t, '-.', LineWidth, LineWidth);
     ylabel('Total price $[Euro]$', 'Interpreter','latex');
     ylim([0 1.3*max(tot_cost_at_tq(1:N))]);
     

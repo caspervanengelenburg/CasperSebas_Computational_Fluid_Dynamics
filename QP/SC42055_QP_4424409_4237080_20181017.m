@@ -101,6 +101,7 @@ ub = [inf inf];
 a0 = [];
 o = optimoptions('quadprog', 'Algorithm', 'interior-point-convex');
 o2 = optimoptions('quadprog', 'Algorithm', 'trust-region-reflective');
+
 a = quadprog(H,c,A,b,Aeq,Beq,lb,ub,a0,o);
 a2 = quadprog(H,c,A,b,Aeq,Beq,lb,ub,a0,o2)
 
@@ -113,7 +114,7 @@ a2 = quadprog(H,c,A,b,Aeq,Beq,lb,ub,a0,o2)
 % 
 %     0.1349 [1/s]
 %     0.0037 [K/J]
-
+% both give the same result
 
 %% 3
 N = 360; % 15 days horizon expressed in hours

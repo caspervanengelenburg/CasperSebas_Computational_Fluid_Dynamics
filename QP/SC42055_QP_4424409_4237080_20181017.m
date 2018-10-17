@@ -100,9 +100,9 @@ lb = [0 0];
 ub = [inf inf];
 a0 = [];
 o = optimoptions('quadprog', 'Algorithm', 'interior-point-convex');
-
+o2 = optimoptions('quadprog', 'Algorithm', 'trust-region-reflective');
 a = quadprog(H,c,A,b,Aeq,Beq,lb,ub,a0,o);
-
+a2 = quadprog(H,c,A,b,Aeq,Beq,lb,ub,a0,o2)
 
 %%%%%%%%%%%
 % RESULTS %
